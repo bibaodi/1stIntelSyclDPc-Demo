@@ -1,4 +1,14 @@
-cmake_minimum_required(VERSION 3.4.3)
+
+cmake_minimum_required(VERSION 3.20.5)
+if( NOT DEFINED CMAKE_C_COMPILER)
+set(CMAKE_C_COMPILER icx)
+endif()
+if( NOT DEFINED CMAKE_CXX_COMPILER)
+set(CMAKE_CXX_COMPILER icpx)
+endif()
+if( NOT DEFINED CMAKE_Fortran_COMPILER)
+set(CMAKE_Fortran_COMPILER ifx)
+endif()
 
 project(test_application)
 
@@ -15,21 +25,13 @@ set(HEADER_FILES
 list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_SOURCE_DIR}/cmake")
 
-set(ComputeCpp_DIR CACHE STRING "NOT-FOUND")
-
-if (NOT ComputeCpp_DIR)
-    message(FATAL_ERROR
-    "SYCL implementation root not provided, please specify "
-    "the path to the root of the chosen SYCL implementation using "
-    "ComputeCpp_DIR=<path/to/install/root>.")
-endif()
-
-find_package(ComputeCpp REQUIRED)
+#find_package(ComputeCpp REQUIRED)
+find_package(IntelSYCL REQUIRED PATHS $ENV{TBBROOT})
 
 add_executable("${PROJECT_NAME}" "${SRC_FILES}" "${HEADER_FILES}")
 
 target_include_directories("${PROJECT_NAME}" PRIVATE 
-                           "${ComputeCpp_INCLUDE_DIRS}"
+                           "${SYCL_INCLUDE_DIRS}"
                            "${CMAKE_SOURCE_DIR}/src")
 
 add_sycl_to_target(TARGET "${PROJECT_NAME}"
