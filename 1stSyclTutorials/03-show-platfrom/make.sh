@@ -1,2 +1,3 @@
 icpx -fsycl ./show_platforms.cpp
-./a.out
+
+test $? -eq 0 && ./a.out
