@@ -24,7 +24,7 @@ set(HEADER_FILES
 
 #find_package(ComputeCpp REQUIRED)
 find_package(IntelSYCL REQUIRED PATHS $ENV{TBBROOT})
-
+message(status "xxxxxxxxxxxxx:""${SYCL_INCLUDE_DIR}")
 add_executable("${PROJECT_NAME}" "${SRC_FILES}" "${HEADER_FILES}")
 
 target_include_directories("${PROJECT_NAME}" PRIVATE 
