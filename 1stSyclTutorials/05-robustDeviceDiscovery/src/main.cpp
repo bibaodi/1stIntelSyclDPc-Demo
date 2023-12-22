@@ -3,6 +3,25 @@
 #include <unistd.h>
 
 // namespace sycl = cl::sycl;
+#include <oneapi/dpl/execution>
+
+int dpl_main(){
+    sycl::queue Q1(sycl::gpu_selector_v);
+    auto gpu_policy = oneapi::dpl::execution::make_device_policy(Q1);
+
+    std::cout << "GPU execution policy runs oneDPL functions on "
+              << gpu_policy.queue().get_device().
+                                    get_info<sycl::info::device::name>()
+              << std::endl;
+
+    sycl::queue Q2(sycl::cpu_selector_v);
+    auto cpu_policy = oneapi::dpl::execution::make_device_policy(Q2);
+
+    std::cout << "CPU execution policy runs oneDPL functions on "
+              << cpu_policy.queue().get_device().
+                                    get_info<sycl::info::device::name>()
+              << std::endl;
+}
 
 inline void discoverDev(){
     sycl::queue Q(sycl::default_selector_v);
@@ -11,13 +30,35 @@ inline void discoverDev(){
               << std::endl;
 }
 
-int main(int, char **) {
-	discoverDev();
-  pid_t pid = getpid();
-  std::cout << "1:当前进程的PID是： " << pid << std::endl;
+inline void showAllDev(){
+  for (auto platform : sycl::platform::get_platforms())
+    {
+        std::cout << "Platform: "
+                  << platform.get_info<sycl::info::platform::name>()
+                  << std::endl;
 
+        for (auto device : platform.get_devices())
+        {
+            std::cout << "\tDevice: "
+                      << device.get_info<sycl::info::device::name>()
+                      << std::endl;
+        }
+    }
+}
+
+int main(int, char **) {
+  bool usingDaemon=false;
+  dpl_main();
+  showAllDev();
+  
+	discoverDev();
+ 
+
+  pid_t pid = getpid();
+
+  std::cout << "1:当前进程的PID是： " << pid << std::endl;
   int nochdir = 1, noclose = 1;
-  if (daemon(nochdir, noclose) < 0) {
+  if (usingDaemon && daemon(nochdir, noclose) < 0) {
     perror("error to daemon...\n");
     return -2;
   }
