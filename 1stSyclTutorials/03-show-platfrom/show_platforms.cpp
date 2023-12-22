@@ -1,4 +1,8 @@
 #include <sycl/sycl.hpp>
+#include <iostream>
+#include <iomanip>
+#include <ctime>
+#include <sstream>
 /*https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#_device_information_descriptors*/
 
 #define PROP_NAME(_x) #_x
@@ -56,4 +60,19 @@ auto& dev = device;
         PRINT_DEVICE_PROPERTY(dev, max_constant_args);
     }
   }
+
+
+{
+    std::time_t t = std::time(nullptr);
+    std::tm* local_time = std::localtime(&t);
+
+    std::stringstream ss;
+    ss << std::put_time(local_time, "%Y%m%dT%H%M%S");
+
+    std::string formatted_time = ss.str();
+    std::cout << "格式化后的日期时间字符串： " << formatted_time << std::endl;
+
+    return 0;
+}
+
 }
