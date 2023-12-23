@@ -12,7 +12,7 @@ end
 #}
 signal=1:80:8192;
 mx0 = max(signal(:));
-b=60;
+b=80;#Decible
 a=10^( b/20);
 mx2=255;
 mx=mx0;
