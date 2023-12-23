@@ -21,6 +21,8 @@ int dpl_main() {
       << "CPU execution policy runs oneDPL functions on "
       << cpu_policy.queue().get_device().get_info<sycl::info::device::name>()
       << std::endl;
+      
+  return 0;
 }
 
 inline void discoverDev() {
@@ -83,10 +85,11 @@ int main(int argc, char **argv) {
   sycl::float4 c = {0.0, 0.0, 0.0, 0.0};
 
   //<<Initialize device selector>>
-  sycl::default_selector device_selector;
+  sycl::device gpuDev;
+  int ret=sycl::default_selector_v(gpuDev);
 
   //<<Initialize queue>>
-  sycl::queue queue(device_selector);
+  sycl::queue queue(gpuDev);
   std::cout << "Running on "
             << queue.get_device().get_info<sycl::info::device::name>() << "\n";
   {
