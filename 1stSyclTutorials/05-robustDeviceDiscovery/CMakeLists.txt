@@ -9,7 +9,7 @@ endif()
 if( NOT DEFINED CMAKE_Fortran_COMPILER)
 set(CMAKE_Fortran_COMPILER ifx)
 endif()
-
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 project(05test_application)
 
 set(SRC_FILES
@@ -24,11 +24,12 @@ set(HEADER_FILES
 
 #find_package(ComputeCpp REQUIRED)
 find_package(IntelSYCL REQUIRED PATHS $ENV{TBBROOT})
-message(status "xxxxxxxxxxxxx:""${SYCL_INCLUDE_DIR}")
+message(STATUS "SYCL_INCLUDE_DIR:${SYCL_INCLUDE_DIR} , SYCL_INCLUDE_DIRS:${SYCL_INCLUDE_DIRS}")
+message(STATUS "ENV{TBBROOT}:$ENV{TBBROOT},")
 add_executable("${PROJECT_NAME}" "${SRC_FILES}" "${HEADER_FILES}")
 
 target_include_directories("${PROJECT_NAME}" PRIVATE 
-                           "${SYCL_INCLUDE_DIRS}"
+                           "${SYCL_INCLUDE_DIR}"
                            "${CMAKE_SOURCE_DIR}/src")
 
 add_sycl_to_target(TARGET "${PROJECT_NAME}"
