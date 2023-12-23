@@ -43,6 +43,17 @@ inline void showAllDev() {
   }
 }
 
+auto exception_handler = [] (sycl::exception_list exceptions) {
+    for (std::exception_ptr const& e : exceptions) {
+      try {
+        std::rethrow_exception(e);
+      } catch(sycl::exception const& e) {
+        std::cout << "Caught asynchronous SYCL exception:\n"
+                  << e.what() << std::endl;
+      }
+    }
+  };
+
 int main(int argc, char **argv) {
   std::cout << "parameter will decide using Daemon or Not.\nargc=" << argc
             << ", argv0=" << argv[0] << "\n";
@@ -56,10 +67,6 @@ int main(int argc, char **argv) {
   } else {
     printf("will no-daemon\n");
   }
-
-  dpl_main();
-  showAllDev();
-  discoverDev();
 
   pid_t pid = getpid();
 
@@ -75,6 +82,10 @@ int main(int argc, char **argv) {
     }
   }
 
+  dpl_main();
+  showAllDev();
+  discoverDev();
+
   pid = getpid();
   std::cout << "2:当前进程的PID是： " << pid << std::endl;
   std::cout << "running after daemon\n";
@@ -89,7 +100,7 @@ int main(int argc, char **argv) {
   int ret=sycl::default_selector_v(gpuDev);
 
   //<<Initialize queue>>
-  sycl::queue queue(gpuDev);
+  sycl::queue queue(gpuDev, exception_handler);
   std::cout << "Running on "
             << queue.get_device().get_info<sycl::info::device::name>() << "\n";
   {
