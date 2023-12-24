@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
       return -2;
     }
   }
-
+  //sleep(5);//confirm the parent exit;
   dpl_main();
   showAllDev();
   discoverDev();
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
 
       cgh.single_task<struct vector_addition564>(
           [=]() { c_acc[0] = a_acc[0] + b_acc[0]; });
-    });
+    }).wait();
   } // end of scope, ensures data copied back to host
 
   //<<Print results>>
