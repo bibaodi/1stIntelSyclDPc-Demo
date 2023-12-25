@@ -22,6 +22,8 @@ int main() {
         std::cout << "host_task @ " << i << " = " << A[i] << "\n";
     });
   });
+  for (int i = 0; i < N; i++)
+    std::cout << "before Wait:main @ " << i << " = " << A[i] << "\n";
   // Wait for work to be completed in the queue before
   // accessing the shared data in the host program.
   q.wait();
