@@ -2,19 +2,22 @@ close all;
 clearvars -except dataFrame;
 clc;
 
+pkg load signal;
+
 % load('F:\Windows\Documents\MATLAB\acr_debugDataBufF0007.mat');                 %% 数据读取
 % load('F:\Windows\Documents\MATLAB\VesselStentFrame20231121.mat');
 % load('F:\Windows\Documents\MATLAB\231122-datas.mat');
 % load('F:\Windows\Documents\MATLAB\PIUstentVessel01.mat');
 % load('F:\Windows\Documents\MATLAB\vesselStent1123-1.mat');
 nAline = size(dataFrame,2);
-skipPBF = 1;
-skipRDS = 1;
+skipPBF = true;
+skipRDS = true;
 %% 从A-Line列对数据进行处理 %%
 fs = 250e6;
 [b,a] = butter(6,[10 75]*1e6/(fs/2),'bandpass');
 dataCache = dataFrame;
-if skipPBF ~= 1
+if !skipPBF
+    print("using PBF\n");
     for i = 1:nAline
         dataCache(:,i) = filter(b,a,dataCache(:,i));
     end
@@ -22,7 +25,8 @@ end
 
 %% 从RHO列消除直流分量  %%
 nPts = size(dataFrame,1);
-if skipRDS ~= 1
+if !skipRDS
+    print("using RDS\n");
     for i = 1:nPts
         rho = dataCache(i,:);                         %% 数据选取
         rho_ac = detrend(rho);                        %% 消除直流分量
@@ -31,14 +35,24 @@ if skipRDS ~= 1
 else
     data_out_rho = dataCache;
 end
+
+##return ;
 %%
+usingkwaveEnv=true;
+addpath('/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave:/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave/examples');
+
 for j = 1:nAline
     a_line = data_out_rho(:,j);                   %% 数据选取
-    a_line_j = hilbert(a_line);                   %% 希尔伯特变换
-    a_line_j = abs(a_line_j);                     %% 取希尔伯特变换后的模
-%     data_out_aline(:,j) = 10*log10(a_line_j./max(a_line_j(:)));
-    data_out_aline(:,j) = 20*log10(a_line_j); #amplitude not power, change 10 to 20;
-end
+    if usingkwaveEnv
+        envLine=envelopeDetection(a_line);
+    else
+        envLine0 = hilbert(a_line);                   %% 希尔伯特变换
+        envLine = abs(envLine0);                     %% 取希尔伯特变换后的模
+    endif
+    %     data_out_aline(:,j) = 10*log10(a_line_j./max(a_line_j(:)));
+    data_out_aline(:,j) = 20*log10(envLine); #amplitude not power, change 10 to 20;
+endfor
+
 data_out_aline = data_out_aline - max(data_out_aline(:));
 #time0 = datetime('now');
 tic;

@@ -54,7 +54,7 @@ for i=1:1:img_d
                 else if tf==tc
                         polar_out_1(i,j)=(ri-rf)*polar_in_1(rc,tf)+(rc-ri)*polar_in_1(rf,tf);
                     else
-                        aa=ti-tf;     
+                        aa=ti-tf;
                         bb=1-aa;
                         cc=ri-rf;
                         dd=1-cc;
@@ -74,3 +74,6 @@ end
 % polar_out_1(752,:) = -10;
 polar_out_1(750,:) = (polar_out_1(752,:)-polar_out_1(749,:))*0.33+polar_out_1(749,:);
 polar_out_1(751,:) = (polar_out_1(752,:)-polar_out_1(749,:))*0.66+polar_out_1(749,:);
+
+
+
