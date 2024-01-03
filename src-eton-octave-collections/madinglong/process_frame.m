@@ -1,4 +1,11 @@
-filepath = uigetdir();
+useGuiGetDataDir=false;
+useGuiGetDataDir=true;
+if useGuiGetDataDir
+  filepath = uigetdir();
+endif
+filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
+printf("filepath=%s\n", filepath);
+
 filenames = dir(filepath);
 filenames = filenames(3:end);
 
