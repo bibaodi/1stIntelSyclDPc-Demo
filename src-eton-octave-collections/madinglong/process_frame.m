@@ -4,8 +4,8 @@ useGuiGetDataDir=false;
 if useGuiGetDataDir
   filepath = uigetdir();
 endif
-filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
-#filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
+#filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
+filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
 printf("filepath=%s\n", filepath);
 
 filenames0 = dir(filepath);

@@ -46,7 +46,8 @@ usingkwaveCompress=true;
 addpath('/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave:/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave/examples');
 
 scanlines_enved=envelopeDetection(scanlines_detrend);
-scanlines_lgped=logCompression( scanlines_enved, 5, true);
+compressFactor=5;
+scanlines_lgped=logCompression(scanlines_enved, compressFactor, true);
 
 usingBeihangCodesPart1=false;
 if usingBeihangCodesPart1
