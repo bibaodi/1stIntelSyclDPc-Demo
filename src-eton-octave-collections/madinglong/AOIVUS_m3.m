@@ -1,40 +1,42 @@
-close all;
-clearvars -except dataFrame;
-clc;
+function AOIVUS_m3(dataFrame)
+##close all;
+##clearvars -except dataFrame;
+##clc;
 
 pkg load signal;
+% load('acr_debugDataBufF0007.mat');
 
-% load('F:\Windows\Documents\MATLAB\acr_debugDataBufF0007.mat');                 %% 数据读取
-% load('F:\Windows\Documents\MATLAB\VesselStentFrame20231121.mat');
-% load('F:\Windows\Documents\MATLAB\231122-datas.mat');
-% load('F:\Windows\Documents\MATLAB\PIUstentVessel01.mat');
-% load('F:\Windows\Documents\MATLAB\vesselStent1123-1.mat');
-NumScanlines = size(dataFrame,2);
-NumSamples = size(dataFrame,1);
-skipPBF = true;
+NumScanlines = size(dataFrame,1);
+NumSamples = size(dataFrame,2);
+skipPBF = false;
 skipRDS = true;
 %% 从A-Line列对数据进行处理 %%
-fs = 250e6;
-[b,a] = butter(6,[10 75]*1e6/(fs/2),'bandpass');
-dataCache = dataFrame;
+scanlines_raw = dataFrame;
 if !skipPBF
-    print("using PBF\n");
+    printf("using PBF\n");
+    sampleRate = 250e6;
+    filterOrder=7;
+    stopFreq=9e6;
+    #[b,a] = butter(filterOrder, [10, 75]*1e6/(sampleRate/2), 'bandpass');
+    [b,a] = butter(filterOrder, stopFreq/(sampleRate/2), 'high');
+    #[b,a] = butter(filterOrder, 20*1e6/(sampleRate/2), 'low');
     for i = 1:NumScanlines
-        dataCache(:,i) = filter(b,a,dataCache(:,i));
+        scanlines_filtered(i, :) = filter(b,a,scanlines_raw(i, :));
     end
+else
+    scanlines_filtered=scanlines_raw;
 end
 
 %% 从RHO列消除直流分量  %%
-nPts = size(dataFrame,1);
 if !skipRDS
     print("using RDS\n");
-    for i = 1:nPts
-        rho = dataCache(i,:);                         %% 数据选取
+    for i = 1:NumSamples
+        rho = scanlines_filtered(i,:);                         %% 数据选取
         rho_ac = detrend(rho);                        %% 消除直流分量
-        data_out_rho(i,:) = rho_ac;                   %% 矩阵输出
+        scanlines_detrend(i,:) = rho_ac;                   %% 矩阵输出
     end
 else
-    data_out_rho = dataCache;
+    scanlines_detrend = scanlines_filtered;
 end
 
 ##return ;
@@ -43,32 +45,38 @@ usingkwaveEnv=true;
 usingkwaveCompress=true;
 addpath('/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave:/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave/examples');
 
-for j = 1:NumScanlines
-    a_line = data_out_rho(:,j);                   %% 数据选取
-    if usingkwaveEnv
-        envLine=envelopeDetection(a_line);
-    else
-        envLine0 = hilbert(a_line);                   %% 希尔伯特变换
-        envLine = abs(envLine0);                     %% 取希尔伯特变换后的模
-    endif
-    %     data_out_aline(:,j) = 10*log10(a_line_j./max(a_line_j(:)));
-    alines_envloped(:,j)=envLine;
-    if usingkwaveCompress
-        compressLine = logCompression(envLine, 3, true);
-    else
-        compressLine = 20*log10(envLine); #amplitude not power, change 10 to 20;
-    endif
-    alines_compressed(:,j) = compressLine;
-    #data_out_aline(:,j) = compressLine;
-endfor
+scanlines_enved=envelopeDetection(scanlines_detrend);
+scanlines_lgped=logCompression( scanlines_enved, 5, true);
+
+usingBeihangCodesPart1=false;
+if usingBeihangCodesPart1
+    for j = 1:NumScanlines
+        a_line = scanlines_detrend(:,j);                   %% 数据选取
+        if usingkwaveEnv
+            envLine=envelopeDetection(a_line);
+        else
+            envLine0 = hilbert(a_line);                   %% 希尔伯特变换
+            envLine = abs(envLine0);                     %% 取希尔伯特变换后的模
+        endif
+        alines_envloped(:,j)=envLine;
+        if usingkwaveCompress
+            compressLine = logCompression(envLine, 1.5, true);
+        else
+            compressLine = 20*log10(envLine); #amplitude not power, change 10 to 20;
+        endif
+        alines_compressed(:,j) = compressLine;
+    endfor
+else
+    alines_compressed= scanlines_lgped;
+endif
 maxPixelVal=max(alines_compressed(:));
-data_out_aline = 255 * alines_compressed / maxPixelVal;
-#data_out_aline = data_out_aline - max(data_out_aline(:));
+scanlines_finishSigProc = 255 * alines_compressed / maxPixelVal;
+#scanlines_finishSigProc = scanlines_finishSigProc - max(scanlines_finishSigProc(:));
 #time0 = datetime('now');
 
-rectImg = data_out_aline;
-f1=figure('Name','RECT-01-image()', "Position", [0, 0, 512, 512]);image(rectImg);
-f2=figure('Name','RECT-01-imagesc()');imagesc(rectImg);
+rectImg = scanlines_finishSigProc.';
+f1=figure('Name','RECT-01-image()', "Position", [0, 0, NumSamples, NumScanlines]);image(rectImg);
+#f2=figure('Name','RECT-01-imagesc()');imagesc(rectImg);
 #return;
 
 ## scan convert;
@@ -81,12 +89,13 @@ angleStep=totalAngle / NumScanlines;
 steering_angles = (0.5:angleStep:360) -180; #eton-debug.work
 image_size=[0.013, 0.013]; # assume it is 6.5mm depth;
 deltaT = 2*image_size(1)/c0/NumSamples;
-scanlines=data_out_aline.';
-b_mode_img = scanConversionIvusEditionBasedonKwave(scanlines, steering_angles, image_size, c0, deltaT);
+
+img_resolution=[512,512];
+b_mode_img = scanConversionIvusEditionBasedonKwave(scanlines_finishSigProc, steering_angles, image_size, c0, deltaT, img_resolution);
 ###############scan convert --begin.end
 
 
-#[outputImg] = Polar_text_01(data_out_aline, nPts);
+#[outputImg] = Polar_text_01(scanlines_finishSigProc, NumSamples);
 outputImg=b_mode_img;
 f3=figure('Name','SCVVT-01-image()', "Position", [0, 0, 512, 512]);image(outputImg); ## imshow would be fixed, but image() will auto fit window size;--eton@240104.
 #return;
