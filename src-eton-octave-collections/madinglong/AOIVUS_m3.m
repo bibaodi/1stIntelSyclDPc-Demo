@@ -9,7 +9,8 @@ pkg load signal;
 % load('F:\Windows\Documents\MATLAB\231122-datas.mat');
 % load('F:\Windows\Documents\MATLAB\PIUstentVessel01.mat');
 % load('F:\Windows\Documents\MATLAB\vesselStent1123-1.mat');
-nAline = size(dataFrame,2);
+NumScanlines = size(dataFrame,2);
+NumSamples = size(dataFrame,1);
 skipPBF = true;
 skipRDS = true;
 %% 从A-Line列对数据进行处理 %%
@@ -18,7 +19,7 @@ fs = 250e6;
 dataCache = dataFrame;
 if !skipPBF
     print("using PBF\n");
-    for i = 1:nAline
+    for i = 1:NumScanlines
         dataCache(:,i) = filter(b,a,dataCache(:,i));
     end
 end
@@ -42,7 +43,7 @@ usingkwaveEnv=true;
 usingkwaveCompress=true;
 addpath('/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave:/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave/examples');
 
-for j = 1:nAline
+for j = 1:NumScanlines
     a_line = data_out_rho(:,j);                   %% 数据选取
     if usingkwaveEnv
         envLine=envelopeDetection(a_line);
@@ -72,11 +73,21 @@ f2=figure('Name','RECT-01-imagesc()');imagesc(rectImg);
 
 ## scan convert;
 tic;
-printf("beflore polar running.")
-%% 图像显示 %%
+printf("beflore scan convert running.\n");
+###############scan convert --begin
+c0 = 1540;                      % [m/s]
+totalAngle=360;
+angleStep=totalAngle / NumScanlines;
+steering_angles = (0.5:angleStep:360) -180; #eton-debug.work
+image_size=[0.013, 0.013]; # assume it is 6.5mm depth;
+deltaT = 2*image_size(1)/c0/NumSamples;
+scanlines=data_out_aline.';
+b_mode_img = scanConversionIvusEditionBasedonKwave(scanlines, steering_angles, image_size, c0, deltaT);
+###############scan convert --begin.end
 
-#ElapsedFun = @()
-[outputImg] = Polar_text_01(data_out_aline, nPts);
+
+#[outputImg] = Polar_text_01(data_out_aline, nPts);
+outputImg=b_mode_img;
 f3=figure('Name','SCVVT-01-image()', "Position", [0, 0, 512, 512]);image(outputImg); ## imshow would be fixed, but image() will auto fit window size;--eton@240104.
 #return;
 toc; #time1 = datetime('now'); above function will cost [Elapsed time is 27.3513 seconds.]
