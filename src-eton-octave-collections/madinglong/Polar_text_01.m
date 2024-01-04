@@ -72,8 +72,8 @@ for i=1:1:img_d
     end
 end
 % polar_out_1(752,:) = -10;
-polar_out_1(750,:) = (polar_out_1(752,:)-polar_out_1(749,:))*0.33+polar_out_1(749,:);
-polar_out_1(751,:) = (polar_out_1(752,:)-polar_out_1(749,:))*0.66+polar_out_1(749,:);
+#polar_out_1(750,:) = (polar_out_1(752,:)-polar_out_1(749,:))*0.33+polar_out_1(749,:);
+#polar_out_1(751,:) = (polar_out_1(752,:)-polar_out_1(749,:))*0.66+polar_out_1(749,:);
 
 
 
