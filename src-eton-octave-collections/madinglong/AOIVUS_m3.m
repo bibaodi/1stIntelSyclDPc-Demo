@@ -8,7 +8,7 @@ pkg load signal;
 
 NumScanlines = size(dataFrame,1);
 NumSamples = size(dataFrame,2);
-skipPBF = false;
+skipPBF = true;
 skipRDS = true;
 %% 从A-Line列对数据进行处理 %%
 scanlines_raw = dataFrame;
@@ -16,7 +16,7 @@ if !skipPBF
     printf("using PBF\n");
     sampleRate = 250e6;
     filterOrder=7;
-    stopFreq=9e6;
+    stopFreq=20e6;
     #[b,a] = butter(filterOrder, [10, 75]*1e6/(sampleRate/2), 'bandpass');
     [b,a] = butter(filterOrder, stopFreq/(sampleRate/2), 'high');
     #[b,a] = butter(filterOrder, 20*1e6/(sampleRate/2), 'low');
@@ -86,8 +86,8 @@ printf("beflore scan convert running.\n");
 ###############scan convert --begin
 c0 = 1540;                      % [m/s]
 totalAngle=360;
-angleStep=totalAngle / NumScanlines;
-steering_angles = (0.5:angleStep:360) -180; #eton-debug.work
+angleStep=totalAngle / (NumScanlines-1);
+steering_angles = (0:angleStep:360) -180; #eton-debug.work
 image_size=[0.013, 0.013]; # assume it is 6.5mm depth;
 deltaT = 2*image_size(1)/c0/NumSamples;
 
