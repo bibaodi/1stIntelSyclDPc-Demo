@@ -6,6 +6,8 @@ if useGuiGetDataDir
 endif
 #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
 filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
+#filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-1";
+filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-2";
 printf("filepath=%s\n", filepath);
 
 filenames0 = dir(filepath);

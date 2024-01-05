@@ -11,7 +11,11 @@ if using1Dfft
     NumSamples=size(scalinedataFrame)(end);
     NumScalines=size(scalinedataFrame)(1);
 
-    xSummed=sum(scalinedataFrame, 1) / NumScalines;#sum all same depth point in all alines; return the length of one line;
+    ringdownStartIdx=NumSamples/3;
+    tobeAnalysedRemoveRingdownData=scalinedataFrame(2, ringdownStartIdx:NumSamples);
+    NumSamples = NumSamples - ringdownStartIdx + 1;
+
+    xSummed=sum(tobeAnalysedRemoveRingdownData, 1) / NumScalines;#sum all same depth point in all alines; return the length of one line;
     yfft=fft(xSummed);
     #yfft=fft(scalinedataFrame(1,:));
     yfft0 = fftshift(yfft);         % shift y values
@@ -21,6 +25,17 @@ if using1Dfft
     #ypower = abs(yfft).^2/NumSamples;
     freq_range0 = (-NumSamples/2:NumSamples/2-1)*(sampleRate/NumSamples); % 0-centered frequency range
     ypower0 = abs(yfft0).^2/NumSamples;    % 0-centered power
+    # ---------remove 0hz --begin;
+    remove0hz=true;
+    if remove0hz
+        i=-3;
+        rangeCenterIdx=cast(length(ypower0)/2, "int32");
+        do
+            ypower0(rangeCenterIdx+i)=1 ;#//adjust 0Hz value in fft;
+            i++;
+        until (i>3)
+    endif
+    # ---------remove 0hz --begin.end;
     valueMax=max(ypower0);
     normalizedY=ypower0/valueMax;
     plot(freq_range0, normalizedY);
@@ -44,8 +59,10 @@ if using2Dfft
     xlabel('Frequency(MHZ)');
     ylabel('Power');
 endif
-return;
+#return;
 #------------using signal path;
-AOIVUS_m3(scalinedataFrame);
+ringdownStartIdx=NumSamples/3;
+tobeProcessData=scalinedataFrame(:, ringdownStartIdx:NumSamples);;
+AOIVUS_m3(tobeProcessData);
 
 #end.
