@@ -17,8 +17,14 @@ if using1Dfft
     NumScalines=size(scalinedataFrame)(1);
 
     ringdownStartIdx=NumSamples/3;
-    tobeAnalysedRemoveRingdownData=scalinedataFrame(2, ringdownStartIdx:NumSamples);
-    NumSamples = NumSamples - ringdownStartIdx + 1;
+
+    deleteRingDown=true;
+    if deleteRingDown: #this will delete 1:StartIdx, else part will do reverse operate;#
+        tobeAnalysedRemoveRingdownData=scalinedataFrame(2, ringdownStartIdx:NumSamples);
+        NumSamples = NumSamples - ringdownStartIdx + 1;
+    else:
+        tobeAnalysedRemoveRingdownData=scalinedataFrame(2, 1:ringdownStartIdx);
+        NumSamples = ringdownStartIdx;
 
     xSummed=sum(tobeAnalysedRemoveRingdownData, 1) / NumScalines;#sum all same depth point in all alines; return the length of one line;
     yfft=fft(xSummed);
