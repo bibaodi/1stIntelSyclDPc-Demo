@@ -80,10 +80,10 @@ r = c0 * (1:Nt) * dt / 2;     % [m]
 
 % create regular Cartesian grid to remap to
 #pos_vec_y_new = (0:1 / (y_resolution-1):1) .* y - y / 2;
-pos_vec_y_new = (-1:1 / (y_resolution-1):1) .* y ;
+pos_vec_y_new = (-1:1 / (y_resolution-0.5):1) .* y ;
 #pos_vec_x_new = (0:1 / (x_resolution-1):1) .* x ;
 #pos_vec_x_new = (0:1 / (x_resolution-1):1) .* x - x / 2;
-pos_vec_x_new = (-1:1 / (x_resolution-1):1) .* x ;
+pos_vec_x_new = (-1:1 / (x_resolution-0.5):1) .* x ;
 [pos_mat_y_new, pos_mat_x_new] = ndgrid(pos_vec_y_new, pos_vec_x_new);
 
 % convert new points to polar coordinates
