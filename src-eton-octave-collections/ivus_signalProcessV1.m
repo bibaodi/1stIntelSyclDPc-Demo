@@ -1,4 +1,4 @@
-function AOIVUS_m3(dataFrame)
+function ivus_signalProcessV1(dataFrame)
 ##close all;
 ##clearvars -except dataFrame;
 ##clc;
@@ -8,7 +8,7 @@ pkg load signal;
 
 NumScanlines = size(dataFrame,1);
 NumSamples = size(dataFrame,2);
-skipPBF = true;
+skipPBF = false;
 %% 从A-Line列对数据进行处理 %%
 scanlines_raw = dataFrame;
 if !skipPBF
@@ -27,6 +27,9 @@ else
 end
 
 scanline_beforeEnvDec = scanlines_filtered;
+[imgSAFT,phiIm,rIm] = ivus_SAFT_V1(scanline_beforeEnvDec.');
+#figure;polFocusedImage(abs(imgSAFT),phiIm,rIm,[],[])
+return;
 ##return ;
 %%
 usingkwaveEnv=true;
@@ -47,7 +50,7 @@ scanlines_finishSigProc = 255 * alines_compressed / maxPixelVal;
 rectImg = scanlines_finishSigProc.';
 f1=figure('Name','RECT-01-image()', "Position", [0, 0, NumSamples, NumScanlines]);image(rectImg);
 #f2=figure('Name','RECT-01-imagesc()');imagesc(rectImg);
-#return;
+
 
 ## scan convert;
 tic;

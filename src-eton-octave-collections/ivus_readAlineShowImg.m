@@ -2,10 +2,10 @@
 close all;clear all;clc;
 
 addpath("/media/eton/hdd931g/42-workspace4debian/10-ExtSrcs/61.231030-DP-CL-MP-HPC/41-sycl-tutorials-eton/src-eton-octave-collections/madinglong");
-    #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
+    filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
     filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
     #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-1";
-    filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-2";
+    #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-2";
 
 scalinedataFrame = ivus_readLinesBinDataV1(filepath);
 NumSamples=size(scalinedataFrame)(end);
@@ -16,14 +16,19 @@ if using1Dfft
     NumSamples=size(scalinedataFrame)(end);
     NumScalines=size(scalinedataFrame)(1);
 
-    ringdownStartIdx=NumSamples/3;
-    deleteRingDown=true;
-    if deleteRingDown ##this will delete 1:StartIdx, else part will do reverse operate;#
-        tobeAnalysedRemoveRingdownData=scalinedataFrame(2, ringdownStartIdx:NumSamples);
-        NumSamples = NumSamples - ringdownStartIdx + 1;
+    showPartLineData=false;
+    if showPartLineData
+        ringdownStartIdx=NumSamples/3;
+        deleteRingDown=true;
+        if deleteRingDown ##this will delete 1:StartIdx, else part will do reverse operate;#
+            tobeAnalysedRemoveRingdownData=scalinedataFrame(2, ringdownStartIdx:NumSamples);
+            NumSamples = NumSamples - ringdownStartIdx + 1;
+        else
+            tobeAnalysedRemoveRingdownData=scalinedataFrame(2, 1:ringdownStartIdx);
+            NumSamples = ringdownStartIdx;
+        endif
     else
-        tobeAnalysedRemoveRingdownData=scalinedataFrame(2, 1:ringdownStartIdx);
-        NumSamples = ringdownStartIdx;
+        tobeAnalysedRemoveRingdownData = scalinedataFrame;
     endif
     xSummed=sum(tobeAnalysedRemoveRingdownData, 1) / NumScalines;#sum all same depth point in all alines; return the length of one line;
     yfft=fft(xSummed);
@@ -71,7 +76,12 @@ if using2Dfft
 endif
 #return;
 #------------using signal path;
-ringdownStartIdx=NumSamples/3;
+removeRingdownData=false;
+if removeRingdownData
+    ringdownStartIdx=NumSamples/3;
+else
+    ringdownStartIdx=1;
+endif
 tobeProcessData=scalinedataFrame(:, ringdownStartIdx:NumSamples);;
 ivus_signalProcessV1(tobeProcessData);
 
