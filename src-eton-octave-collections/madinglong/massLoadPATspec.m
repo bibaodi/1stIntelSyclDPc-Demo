@@ -6,7 +6,7 @@
 block长度均一的话是可以通过前面那行numWfm = filelist(fidx).bytes/(8*1400+4);来计算出波形数量的，可以用来提前分配内存。
 
 #}
-filepath = 'C:\Users\Michael\Documents\ACE work\Engineering\Verification\Test data\20231119\ringdownBG';
+filepath = '/media/eton/hdd931g/42-workspace4debian/51-develop/33-data-analyse/240105-vessels/fromOndaPulse';#/probeTx240105_PAT_00.data';
 filelist = dir(filepath);
 
 filelist = filelist(3:end);
