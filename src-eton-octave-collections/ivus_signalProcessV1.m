@@ -27,9 +27,16 @@ else
 end
 
 scanline_beforeEnvDec = scanlines_filtered;
+
+##{
+# try saft using cpsm;
+toolboxPath='/home/eton/00-src/30-octaves/synaptus';
+addpath(fullfile(toolboxPath,'core'),fullfile(toolboxPath,'misc'));
+
 [imgSAFT,phiIm,rIm] = ivus_SAFT_V1(scanline_beforeEnvDec.');
-#figure;polFocusedImage(abs(imgSAFT),phiIm,rIm,[],[])
+figure;polFocusedImage(abs(imgSAFT),phiIm,rIm,[],[])
 return;
+##}
 ##return ;
 %%
 usingkwaveEnv=true;
@@ -51,6 +58,7 @@ rectImg = scanlines_finishSigProc.';
 f1=figure('Name','RECT-01-image()', "Position", [0, 0, NumSamples, NumScanlines]);image(rectImg);
 #f2=figure('Name','RECT-01-imagesc()');imagesc(rectImg);
 
+#sa_processed=ivus_saft_algo_v01(rectImg);
 
 ## scan convert;
 tic;

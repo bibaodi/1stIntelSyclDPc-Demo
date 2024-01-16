@@ -26,6 +26,9 @@ function dataFrame = process_frame(dataFolder)
     dataFrame = zeros(numAline, NumSamples);
     for fidx = 1:numAline
         fnametmp = filenames(fidx).name;
+        if ! endsWith(fnametmp, ".bin")
+            continue;
+        endif
         tmp = textscan(fnametmp,'acr_debugDataBufF%dL%d.bin');
         fidxRead = tmp{2};
         if fidxRead != (fidx-1)
