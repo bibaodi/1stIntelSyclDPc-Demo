@@ -2,8 +2,8 @@
 close all;clear all;clc;
 
 addpath("/media/eton/hdd931g/42-workspace4debian/10-ExtSrcs/61.231030-DP-CL-MP-HPC/41-sycl-tutorials-eton/src-eton-octave-collections/madinglong");
-    filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
-    filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
+filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
+filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
     #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-1";
     #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-2";
 
@@ -81,6 +81,19 @@ if removeRingdownData
     ringdownStartIdx=NumSamples/3;
 else
     ringdownStartIdx=1;
+endif
+
+illustrateXcorr=false;#illustrate the correlation for ringdown part ;
+if illustrateXcorr
+    ringdownLine=scalinedataFrame(411, 50:300);
+    scanline411=scalinedataFrame(411,:);
+    plot(scanline411);
+    pkg load signal;
+    scanline411 = scanline411 - mean(scanline411);
+    ringdownLine = ringdownLine - mean(ringdownLine);
+    [r, lags]=xcorr(scanline411, ringdownLine);
+    figure;stem(lags, r);
+    return;
 endif
 tobeProcessData=scalinedataFrame(:, ringdownStartIdx:NumSamples);;
 ivus_signalProcessV1(tobeProcessData);
