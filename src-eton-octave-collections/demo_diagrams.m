@@ -94,12 +94,14 @@ bar(y2);title('Display four groups of three bars..');
 subplot(2,2,[3,4]);
 y = [2 2 3; 2 5 6; 2 8 9; 2 11 12];
 bar(y,'stacked');title('Display one bar for each row of the matrix. The height of each bar is the sum of the elements in the row.');
+#{
 ############
-##bar3:
+##bar3: not implement in octave yet.
 ############
 figure("Name", "Bar3 graph");
 z = [1 4 7; 2 5 8; 3 6 9; 4 7 10];
 bar3(z);
+#}
 return;
 
 
