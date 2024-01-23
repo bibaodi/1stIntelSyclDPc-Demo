@@ -1,29 +1,30 @@
 #eton@230123 if want video file then change below to true;
+clearvars;close all;
 generateVideoFile=true;
 needUserConfirm=false;
 
-mhdfileName='/home/eton/42workspace.lnk/51-develop/33-data-analyse/cachedata_20240108T174945_7.mhd';
+mhdfileName='/home/eton/42workspace.lnk/51-develop/33-data-analyse/cachedata_20240108T174552_5.mhd';
 
 [~, metaInfo]=metaImageIOread(mhdfileName,  -1);
 frameCount=metaInfo.DimSize(3);#[lineNum, samlieNum, frameNum]
 
 [dir, name0, ext]=fileparts(mhdfileName);
 
-frameStart=500;
-frameStep=3;
-frameEnd=1000;
+frameStart=1;
+frameStep=1;
+frameEnd=594;
 
 assert(frameStart<=frameEnd && frameEnd<=frameCount);
 
 if generateVideoFile
-    fn = fullfile(tempdir(), strcat("saft", name0, num2str(frameStart), "-", num2str(frameEnd), ".mp4"));
+    fn = fullfile(tempdir(), strcat("saft-", name0,"-F", num2str(frameStart), "-", num2str(frameEnd), ".mp4"));
     w0 = VideoWriter(fn);
     open(w0);
 endif
 
 for sliceIdx=frameStart:frameStep:frameEnd #mhd slice index
     [buf, ~]=metaImageIOread(mhdfileName,  sliceIdx);
-    set(gcf(), "Name", strcat(name, num2str(sliceIdx)));
+    set(gcf(), "Name", strcat(name0, num2str(sliceIdx)));
     #buf2=reshape(buf,[256, 1792]);
     ivus_signalProcessV1(buf)
     if generateVideoFile
