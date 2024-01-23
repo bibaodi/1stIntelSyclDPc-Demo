@@ -3,15 +3,16 @@ close all;clear all;clc;
 
 addpath("/media/eton/hdd931g/42-workspace4debian/10-ExtSrcs/61.231030-DP-CL-MP-HPC/41-sycl-tutorials-eton/src-eton-octave-collections/madinglong");
 filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231220-rfdatas"
-filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
+#filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
     #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-1";
     #filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-2";
+#filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/240105-vessels/atdN4-5";
 
 scalinedataFrame = ivus_readLinesBinDataV1(filepath);
 NumSamples=size(scalinedataFrame)(end);
 NumScalines=size(scalinedataFrame)(1);
 #------------using fft1d;
-using1Dfft=9;
+using1Dfft=9#false;
 if using1Dfft
     NumSamples=size(scalinedataFrame)(end);
     NumScalines=size(scalinedataFrame)(1);
@@ -95,6 +96,10 @@ if illustrateXcorr
     figure;stem(lags, r);
     return;
 endif
+
+[dir, name, ext]=fileparts(filepath);
+set(gcf(), "Name", name);
+
 tobeProcessData=scalinedataFrame(:, ringdownStartIdx:NumSamples);;
 ivus_signalProcessV1(tobeProcessData);
 
