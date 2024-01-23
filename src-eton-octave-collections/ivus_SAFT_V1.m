@@ -36,6 +36,7 @@ transFunc = 'haun';     % Transfer function, options 'haun', 'gardner', 'exact'
 
 %% Focus
 disp('Processing data')
+clear im;
 tic
 [im,phiIm,rIm] = cpsm(ptp,fs,tDelay,cc,fLow,fHigh,phiStep,r0,rStep,...
     rStart,rEnd,'transFunc',transFunc);
@@ -43,8 +44,11 @@ toc
 
 %% Plot raw data and focused image
 fig = gcf ();figNamePrefix=get(fig, "Name");
-close all;
-figure("Name", strcat(figNamePrefix, ":", "SAFT Image"), "Position", [0, 0, 1920, 780]);
+clf();
+#close all;
+#figure("Name", strcat(figNamePrefix, ":", "SAFT Image"), "Position", [0, 0, 1920, 780]);
+set(fig, "Name", strcat(figNamePrefix, ":", "SAFT Image"), "Position", [0, 0, 1920, 780]);
+
 subplot(1,2,1),
 polRawDataImage(abs(hilbert(ptp)),tDelay+(0:(size(ptp,1)-1))/fs,phiIm,...
     [],[],r0,cc)

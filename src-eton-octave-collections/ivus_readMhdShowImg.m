@@ -8,8 +8,10 @@ endif
 
 mhdfileName='/home/eton/42workspace.lnk/51-develop/33-data-analyse/cachedata_20240108T174945_7.mhd';
 
-[~, metaInfo]=metaImageIOread(mhdfileName,  sliceIdx);
+[~, metaInfo]=metaImageIOread(mhdfileName,  -1);
 frameCount=metaInfo.DimSize(3);#[lineNum, samlieNum, frameNum]
+
+[dir, name0, ext]=fileparts(mhdfileName);
 
 frameStart=800;
 frameStep=1;
@@ -19,6 +21,7 @@ assert(frameStart<=frameEnd && frameEnd<=frameCount);
 
 for sliceIdx=frameStart:frameStep:frameEnd #mhd slice index
     [buf, ~]=metaImageIOread(mhdfileName,  sliceIdx);
+    set(gcf(), "Name", strcat(name, num2str(sliceIdx)));
     #buf2=reshape(buf,[256, 1792]);
     ivus_signalProcessV1(buf)
     if generateVideoFile

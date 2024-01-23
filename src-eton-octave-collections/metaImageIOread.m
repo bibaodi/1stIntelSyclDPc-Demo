@@ -210,6 +210,10 @@ if ~ismissing(meta.CompressedData) && meta.CompressedData
     image = zlib_decompress(image, meta.ElementType);
 else
     readSz = meta.DimSize(1) * meta.DimSize(2);
+    if sliceIdx<1
+        imageOut=[];
+        return;
+    endif
     assert(sliceIdx>0);
     seekSkip = readSz * (sliceIdx-1);
     fseek(fid, seekSkip);
