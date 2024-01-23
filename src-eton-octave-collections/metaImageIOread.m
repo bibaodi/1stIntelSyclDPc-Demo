@@ -216,7 +216,7 @@ else
     endif
     assert(sliceIdx>0);
     seekSkip = readSz * (sliceIdx-1);
-    fseek(fid, seekSkip);
+    fseek(fid, seekSkip*element_size);
     image = [image, fread(fid, readSz, precision)]; %#ok<AGROW>
     imageOut=reshape(image,[meta.DimSize(1), meta.DimSize(2)]);
 end

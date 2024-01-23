@@ -1,10 +1,6 @@
-generateVideoFile=false;
-
-if generateVideoFile
-    fn = fullfile (tempdir(), "saft800-900.mp4");
-    w0 = VideoWriter (fn);
-    open (w0);
-endif
+#eton@230123 if want video file then change below to true;
+generateVideoFile=true;
+needUserConfirm=false;
 
 mhdfileName='/home/eton/42workspace.lnk/51-develop/33-data-analyse/cachedata_20240108T174945_7.mhd';
 
@@ -13,11 +9,17 @@ frameCount=metaInfo.DimSize(3);#[lineNum, samlieNum, frameNum]
 
 [dir, name0, ext]=fileparts(mhdfileName);
 
-frameStart=800;
-frameStep=1;
-frameEnd=900;
+frameStart=500;
+frameStep=3;
+frameEnd=1000;
 
 assert(frameStart<=frameEnd && frameEnd<=frameCount);
+
+if generateVideoFile
+    fn = fullfile(tempdir(), strcat("saft", name0, num2str(frameStart), "-", num2str(frameEnd), ".mp4"));
+    w0 = VideoWriter(fn);
+    open(w0);
+endif
 
 for sliceIdx=frameStart:frameStep:frameEnd #mhd slice index
     [buf, ~]=metaImageIOread(mhdfileName,  sliceIdx);
@@ -26,15 +28,17 @@ for sliceIdx=frameStart:frameStep:frameEnd #mhd slice index
     ivus_signalProcessV1(buf)
     if generateVideoFile
         drawnow;
-        writeVideo (w0, getframe (gcf));
+        writeVideo(w0, getframe (gcf));
     endif
-    var = input("Enter if continue (y/n):", 's');
-    fprintf("Input is [%c]\n", var);
-    if 'y' == var || 'Y' == var
-        continue;
-    else
-        printf("user stop continue.\n");
-        break;
+    if needUserConfirm
+        var = input("Enter if continue (y/n):", 's');
+        fprintf("Input is [%c]\n", var);
+        if 'y' == var || 'Y' == var
+            continue;
+        else
+            printf("user stop continue.\n");
+            break;
+        endif
     endif
 endfor
 
