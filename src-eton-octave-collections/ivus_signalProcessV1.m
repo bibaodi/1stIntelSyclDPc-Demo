@@ -8,8 +8,9 @@ pkg load signal;
 
 NumScanlines = size(dataFrame,1);
 NumSamples = size(dataFrame,2);
-skipPBF = false;
-%% 从A-Line列对数据进行处理 %%
+skipPBF = true;
+
+
 scanlines_raw = dataFrame;
 if !skipPBF
     printf("using PBF\n");
@@ -34,11 +35,10 @@ toolboxPath='/home/eton/00-src/30-octaves/synaptus';
 addpath(fullfile(toolboxPath,'core'),fullfile(toolboxPath,'misc'));
 
 [imgSAFT,phiIm,rIm] = ivus_SAFT_V1(scanline_beforeEnvDec.');
-figure;polFocusedImage(abs(imgSAFT),phiIm,rIm,[],[])
+#figure("Name", "SAFTed-Image");polFocusedImage(abs(imgSAFT),phiIm,rIm,[],[])
 return;
 ##}
-##return ;
-%%
+
 usingkwaveEnv=true;
 usingkwaveCompress=true;
 addpath('/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave:/home/eton/00-src/30-octaves/k-wave-toolbox-version-1.4/k-Wave/examples');
