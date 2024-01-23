@@ -1,4 +1,4 @@
-##{
+#{
 #debug below function;
 close all;clear all;clc;
 filepath="/home/eton/42workspace.lnk/51-develop/33-data-analyse/231215-5mhz"
@@ -12,8 +12,8 @@ toolboxPath='/home/eton/00-src/30-octaves/synaptus';
 addpath(fullfile(toolboxPath,'core'),fullfile(toolboxPath,'misc'));
 pkg load signal;
 pkg load image;
-##}
-#function [im,phiIm,rIm]=ivus_SAFT_V1(scanlinesData)
+#}
+function [im,phiIm,rIm]=ivus_SAFT_V1(scanlinesData)
 ## eton-debug.begin
 ptp=scanlinesData;
 NumScanlines=size(scanlinesData,2);
@@ -40,12 +40,17 @@ tic
 [im,phiIm,rIm] = cpsm(ptp,fs,tDelay,cc,fLow,fHigh,phiStep,r0,rStep,...
     rStart,rEnd,'transFunc',transFunc);
 toc
+
 %% Plot raw data and focused image
-figure("Position", [0, 0, 1900, 840]);subplot(1,2,1),
+fig = gcf ();figNamePrefix=get(fig, "Name");
+close all;
+figure("Name", strcat(figNamePrefix, ":", "SAFT Image"), "Position", [0, 0, 1920, 780]);
+subplot(1,2,1),
 polRawDataImage(abs(hilbert(ptp)),tDelay+(0:(size(ptp,1)-1))/fs,phiIm,...
     [],[],r0,cc)
-subplot(1,2,2),
+title(figNamePrefix);
+    subplot(1,2,2),
 polFocusedImage(abs(im),phiIm,rIm,[],[])
 title("left origin, right apply SAFT.");
-saveas(gcf, strcat(filepath, "/img-saft.png"));
+#saveas(gcf, strcat(filepath, "/img-saft.png"));
 disp('end of demo SAFT... \n by eton. ')
