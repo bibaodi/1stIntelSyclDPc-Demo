@@ -29,7 +29,7 @@ for sliceIdx=frameStart:frameStep:frameEnd #mhd slice index
 
     elementCount=numel(buf);
     absBuf=abs(buf);
-    retSum = sum(sum(absBuf));
+    retSum = sum(sum(absBuf, "double"), "double");#fix the precision mistake eton@240220;
     retMax = max(max(buf));
     retMin  = min(min(buf));
     retMedian = median(median(buf));
